@@ -1,0 +1,107 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // Vamos definir isto num ficheiro .env
+}
+
+// Modelos baseados nos ENUMs da AV1 e AV2
+enum TipoAeronave {
+  COMERCIAL
+  MILITAR
+}
+
+enum TipoPeca {
+  NACIONAL
+  IMPORTADA
+}
+
+enum StatusPeca {
+  EM_PRODUCAO
+  EM_TRANSPORTE
+  PRONTA
+}
+
+enum StatusEtapa {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDA
+}
+
+enum NivelPermissao {
+  ADMINISTRADOR
+  ENGENHEIRO
+  OPERADOR
+}
+
+enum TipoTeste {
+  ELETRICO
+  HIDRAULICO
+  AERODINAMICO
+}
+
+enum ResultadoTeste {
+  APROVADO
+  REPROVADO
+}
+
+// Modelo de Funcionário (baseado na AV1 [cite: 106, 109])
+model Funcionario {
+  id             Int              @id @default(autoincrement())
+  nome           String
+  telefone       String?
+  endereco       String?
+  email          String           @unique // Usado para login
+  senha          String // Na vida real, isto seria uma hash!
+  nivelPermissao NivelPermissao   @default(OPERADOR)
+  etapas         Etapa[]          @relation("FuncionarioEtapas") // Funcionários responsáveis
+}
+
+// Modelo da Aeronave (baseado na AV1 [cite: 93])
+model Aeronave {
+  id         Int           @id @default(autoincrement())
+  codigo     String        @unique // [cite: 95]
+  modelo     String
+  tipo       TipoAeronave
+  capacidade Int
+  alcance    Int
+  pecas      Peca[]        @relation("AeronavePecas")
+  etapas     Etapa[]       @relation("AeronaveEtapas")
+  testes     Teste[]       @relation("AeronaveTestes")
+  // Relatório não é uma tabela, é gerado a pedido [cite: 114]
+}
+
+// Modelo de Peça (baseado na AV1 [cite: 97])
+model Peca {
+  id         Int           @id @default(autoincrement())
+  nome       String
+  tipo       TipoPeca
+  fornecedor String
+  status     StatusPeca    @default(EM_PRODUCAO)
+  aeronave   Aeronave      @relation("AeronavePecas", fields: [aeronaveId], references: [id])
+  aeronaveId Int
+}
+
+// Modelo de Etapa (baseado na AV1 [cite: 102])
+model Etapa {
+  id           Int           @id @default(autoincrement())
+  nome         String
+  prazo        DateTime
+  status       StatusEtapa   @default(PENDENTE)
+  aeronave     Aeronave      @relation("AeronaveEtapas", fields: [aeronaveId], references: [id])
+  aeronaveId   Int
+  funcionarios Funcionario[] @relation("FuncionarioEtapas")
+}
+
+// Modelo de Teste (baseado na AV1 [cite: 112])
+model Teste {
+  id         Int            @id @default(autoincrement())
+  tipo       TipoTeste
+  resultado  ResultadoTeste
+  aeronave   Aeronave       @relation("AeronaveTestes", fields: [aeronaveId], references: [id])
+  aeronaveId Int
+}
