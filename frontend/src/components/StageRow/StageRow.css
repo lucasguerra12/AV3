@@ -1,0 +1,88 @@
+.stage-row {
+    display: grid;
+    grid-template-columns: 3fr 2fr 2fr 2fr 1fr;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.stage-name {
+    font-weight: bold;
+    color: #343a40;
+}
+
+.stage-deadline, .stage-responsible {
+    color: #6c757d;
+}
+
+.stage-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.stage-actions {
+    text-align: right;
+}
+
+.manage-button {
+    padding: 8px 12px;
+    margin-left: 5px;
+    background-color: transparent;
+    border: 1px solid #ced4da;
+    color: #495057;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.manage-button:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.manage-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.manage-button.start {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.manage-button.start:hover:not(:disabled) {
+    background-color: #28a745;
+    color: white;
+}
+
+.manage-button.finish {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.manage-button.finish:hover:not(:disabled) {
+    background-color: #007bff;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .stage-row {
+        grid-template-columns: 1fr; 
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .stage-actions {
+        text-align: left;
+        margin-top: 10px;
+    }
+
+    .stage-deadline::before { content: 'Prazo: '; font-weight: bold; color: #343a40; }
+    .stage-responsible::before { content: 'Responsáveis: '; font-weight: bold; color: #343a40; }
+}

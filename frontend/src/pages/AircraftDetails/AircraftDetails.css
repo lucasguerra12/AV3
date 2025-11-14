@@ -1,0 +1,170 @@
+.details-layout {
+    display: flex;
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    margin-left: 250px;
+    flex-grow: 1;
+    padding: 30px;
+    height: 100vh;
+}
+
+.details-header {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.details-header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #343a40;
+}
+
+.aircraft-code {
+    font-size: 18px;
+    color: #888;
+}
+
+.details-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.details-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    top: 2px;
+}
+
+.tab.active {
+    font-weight: bold;
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.tab-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.relatorio-container {
+    background-color: #f1f5f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.relatorio-container pre {
+    white-space: pre-wrap;       
+    word-wrap: break-word; 
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #334155;
+    margin: 0;
+}
+
+.add-form-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #dee2e6;
+}
+
+.add-form-container h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #495057;
+}
+
+.add-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+.add-form input,
+.add-form select {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #fff;
+    color: #333;
+    box-sizing: border-box; 
+}
+
+.add-form .add-button-small {
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    height: 40px;
+}
+
+.add-button-small:hover {
+    background-color: #0056b3;
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.download-button:hover {
+    background-color: #138496;
+}
+
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .details-tabs {
+        overflow-x: auto; 
+    }
+}

@@ -1,0 +1,48 @@
+.funcionario-row {
+    display: grid;
+    grid-template-columns: 2.5fr 3fr 2fr 1fr;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.funcionario-info.nome {
+    font-weight: bold;
+}
+
+.funcionario-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.permissao-pill {
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+}
+
+.permissao-admin { background-color: #dc3545; }
+.permissao-engenheiro { background-color: #007bff; }
+.permissao-operador { background-color: #6c757d; }
+
+@media (max-width: 768px) {
+    .funcionario-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .funcionario-actions {
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+
+    .funcionario-info.email::before { content: 'Email: '; font-weight: bold; color: #343a40; }
+}
