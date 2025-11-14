@@ -1,69 +1,50 @@
 import React from 'react';
 import './PecaRow.css';
 import { Peca } from '../../models/Peca';
-import { StatusPeca } from '../../models/enums';
-import { FaTrash, FaShippingFast, FaCheck } from 'react-icons/fa';
+import { StatusPeca, NivelPermissao } from '../../models/enums';
 
 interface PecaRowProps {
     peca: Peca;
-    onUpdateStatus: (peca: Peca, novoStatus: StatusPeca) => void;
-    onRemove: (nomePeca: string) => void;
-    canManage: boolean;
+    canManage: boolean; 
+    onUpdateStatus: (peca: Peca, novoStatus: StatusPeca) => void; 
+    onRemove: (pecaId: number) => void; 
 }
 
-const getStatusClass = (status: StatusPeca) => {
-    switch (status) {
-        case StatusPeca.PRONTA:
-            return 'status-pronta';
-        case StatusPeca.EM_TRANSPORTE:
-            return 'status-transporte';
-        case StatusPeca.EM_PRODUCAO:
-        default:
-            return 'status-producao';
+const PecaRow: React.FC<PecaRowProps> = ({ peca, canManage, onUpdateStatus, onRemove }) => {
+
+    const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onUpdateStatus(peca, e.target.value as StatusPeca);
     }
-};
-
-
-const PecaRow = ({ peca, onUpdateStatus, onRemove, canManage }: PecaRowProps) => {
-    const statusClassName = getStatusClass(peca.status);
-
+    const handleRemove = () => {
+        if (window.confirm(`Tem a certeza que quer remover a peça ${peca.nome}?`)) {
+            onRemove(peca.id);
+        }
+    }
     return (
         <div className="peca-row">
-            <div className="peca-info nome">{peca.nome}</div>
-            <div className="peca-info tipo">{peca.tipo}</div>
-            <div className="peca-info fornecedor">{peca.fornecedor}</div>
-            <div className="peca-info status">
-                <span className={`status-pill ${statusClassName}`}>
-                    {peca.status}
-                </span>
+            <div className="peca-info">
+                <span className="peca-nome">{peca.nome}</span>
+                <span className="peca-fornecedor">{peca.fornecedor} ({peca.tipo})</span>
             </div>
-            <div className="peca-actions">
-                {peca.status === StatusPeca.EM_PRODUCAO && (
-                    <button 
-                        className="action-button transport" 
-                        onClick={() => onUpdateStatus(peca, StatusPeca.EM_TRANSPORTE)}
-                        title="Marcar como Em Transporte"
+            <div className="peca-status-controls">
+                {canManage ? (
+                    <select 
+                        value={peca.status} 
+                        onChange={handleStatusChange} 
+                        className={`status-select status-${peca.status.toLowerCase()}`}
                     >
-                        <FaShippingFast />
-                    </button>
+                        <option value={StatusPeca.EM_PRODUCAO}>Em Produção</option>
+                        <option value={StatusPeca.EM_TRANSPORTE}>Em Transporte</option>
+                        <option value={StatusPeca.PRONTA}>Pronta</option>
+                    </select>
+                ) : (
+                    <span className={`status-badge status-${peca.status.toLowerCase()}`}>
+                        {peca.status.replace('_', ' ')}
+                    </span>
                 )}
-                {peca.status === StatusPeca.EM_TRANSPORTE && (
-                    <button 
-                        className="action-button ready" 
-                        onClick={() => onUpdateStatus(peca, StatusPeca.PRONTA)}
-                        title="Marcar como Pronta"
-                    >
-                        <FaCheck />
-                    </button>
-                )}
+                
                 {canManage && (
-                    <button 
-                        className="action-button remove"
-                        onClick={() => onRemove(peca.nome)}
-                        title="Remover Peça"
-                    >
-                        <FaTrash />
-                    </button>
+                    <button onClick={handleRemove} className="remove-btn-small">×</button>
                 )}
             </div>
         </div>

@@ -1,9 +1,8 @@
 import { TipoTeste, ResultadoTeste } from "./enums";
-export class Teste {
+
+export interface Teste {
+    id: number; 
     tipo: TipoTeste;
     resultado: ResultadoTeste;
-    constructor(tipo: TipoTeste, resultado: ResultadoTeste) {
-        this.tipo = tipo;
-        this.resultado = resultado;
-    }
+    aeronaveId: number; 
 }

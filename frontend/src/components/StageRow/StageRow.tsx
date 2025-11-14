@@ -1,92 +1,99 @@
 import React from 'react';
 import './StageRow.css';
 import { Etapa } from '../../models/Etapa';
-import { FaCheckCircle, FaCog, FaClock, FaTrash, FaUsers } from 'react-icons/fa';
 import { StatusEtapa } from '../../models/enums';
+import { FaPlay, FaCheck, FaUsers, FaTrash } from 'react-icons/fa';
 
 interface StageRowProps {
     etapa: Etapa;
-    onUpdateStatus: (etapa: Etapa, acao: 'iniciar' | 'finalizar') => void;
-    onRemove: (nomeEtapa: string) => void;
-    onManageFuncionarios: () => void;
+    onUpdateStatus: (etapa: Etapa, acao: 'iniciar' | 'finalizar') => void; 
+    onRemove: (etapaId: number) => void;
+    onManageFuncionarios: (etapa: Etapa) => void;
     isPreviousEtapaConcluida: boolean;
     isAnyEtapaEmAndamento: boolean;
-    canManage: boolean; 
+    canManage: boolean;
 }
 
-const getStatusInfo = (status: StatusEtapa) => {
-    switch (status) {
-        case StatusEtapa.CONCLUIDA:
-            return { icon: <FaCheckCircle />, text: 'Concluída', color: '#4caf50' };
-        case StatusEtapa.EM_ANDAMENTO:
-            return { icon: <FaCog />, text: 'Em Andamento', color: '#ff9800' };
-        case StatusEtapa.PENDENTE:
-        default:
-            return { icon: <FaClock />, text: 'Pendente', color: '#6c757d' };
+const StageRow: React.FC<StageRowProps> = ({ 
+    etapa, 
+    onUpdateStatus, 
+    onRemove, 
+    onManageFuncionarios,
+    isPreviousEtapaConcluida,
+    isAnyEtapaEmAndamento,
+    canManage
+}) => {
+
+    const handleUpdate = (acao: 'iniciar' | 'finalizar') => {
+        onUpdateStatus(etapa, acao);
     }
-};
 
+    const handleRemove = () => {
+        if (window.confirm(`Tem a certeza que quer remover a etapa "${etapa.nome}"?`)) {
+            onRemove(etapa.id);
+        }
+    }
 
-const StageRow = ({ etapa, onUpdateStatus, onRemove, onManageFuncionarios, isPreviousEtapaConcluida, isAnyEtapaEmAndamento, canManage }: StageRowProps) => {
-    const statusInfo = getStatusInfo(etapa.status);
-
-    const canInitiate = etapa.status === StatusEtapa.PENDENTE && isPreviousEtapaConcluida && !isAnyEtapaEmAndamento;
-    const canFinish = etapa.status === StatusEtapa.EM_ANDAMENTO;
+    const handleManage = () => {
+        onManageFuncionarios(etapa);
+    }
+    const canStart = canManage && 
+                     etapa.status === StatusEtapa.PENDENTE && 
+                     isPreviousEtapaConcluida && 
+                     !isAnyEtapaEmAndamento;
+                     
+    const canFinish = canManage && 
+                      etapa.status === StatusEtapa.EM_ANDAMENTO;
 
     return (
-        <div className="stage-row">
-            <div className="stage-name">{etapa.nome}</div>
-            <div className="stage-deadline">
-                Prazo: {etapa.prazo.toLocaleDateString()}
-            </div>
-            <div className="stage-responsible">
-                Responsáveis: {etapa.funcionarios?.length || 0}
-            </div>
-            <div className="stage-status" style={{ color: statusInfo.color }}>
-                {statusInfo.icon}
-                <span>{statusInfo.text}</span>
+        <div className={`stage-row ${etapa.status.toLowerCase()}`}>
+            <div className="stage-info">
+                <span className="stage-nome">{etapa.nome}</span>
+                <span className="stage-prazo">
+                    Prazo: {new Date(etapa.prazo).toLocaleDateString()}
+                </span>
+                <span className="stage-funcionarios">
+                    {etapa.funcionarios.length} funcionário(s)
+                </span>
             </div>
             
-            <div className="stage-actions">
-                {canManage && (
-                    <button 
-                        className="manage-button"
-                        onClick={onManageFuncionarios}
-                        title="Gerir Responsáveis"
-                    >
-                        <FaUsers />
-                    </button>
-                )}
-
+            <div className="stage-controls">
                 {etapa.status === StatusEtapa.PENDENTE && (
                     <button 
-                        className="manage-button start"
-                        onClick={() => onUpdateStatus(etapa, 'iniciar')}
-                        disabled={!canInitiate}
-                        title={!canInitiate ? "Aguarde a etapa anterior ou outra em andamento ser finalizada" : "Iniciar Etapa"}
+                        onClick={() => handleUpdate('iniciar')} 
+                        className="stage-btn start" 
+                        disabled={!canStart}
+                        title={!canStart ? "Aguarde a etapa anterior ou outra em andamento" : "Iniciar Etapa"}
                     >
-                        Iniciar
+                        <FaPlay /> Iniciar
                     </button>
                 )}
                 {etapa.status === StatusEtapa.EM_ANDAMENTO && (
                     <button 
-                        className="manage-button finish"
-                        onClick={() => onUpdateStatus(etapa, 'finalizar')}
+                        onClick={() => handleUpdate('finalizar')} 
+                        className="stage-btn finish"
                         disabled={!canFinish}
                     >
-                        Finalizar
+                        <FaCheck /> Finalizar
                     </button>
                 )}
-                
-                {canManage && (
-                    <button 
-                        className="manage-button remove"
-                        onClick={() => onRemove(etapa.nome)}
-                        title="Remover Etapa"
-                    >
-                        <FaTrash />
-                    </button>
+                {etapa.status === StatusEtapa.CONCLUIDA && (
+                    <span className="status-badge-concluida"><FaCheck /> Concluída</span>
                 )}
+                <button 
+                    onClick={handleManage} 
+                    className="stage-btn manage"
+                    disabled={!canManage}
+                >
+                    <FaUsers />
+                </button>
+                <button 
+                    onClick={handleRemove} 
+                    className="stage-btn remove"
+                    disabled={!canManage}
+                >
+                    <FaTrash />
+                </button>
             </div>
         </div>
     );

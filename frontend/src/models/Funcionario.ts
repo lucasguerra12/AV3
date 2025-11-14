@@ -1,24 +1,13 @@
 import { NivelPermissao } from "./enums";
 
-export class Funcionario {
+// Alterado de 'class' para 'interface'
+export interface Funcionario {
     id: number;
     nome: string;
     telefone: string;
     endereco: string;
     email: string; 
-    private senha: string;
+    senha?: string; // Senha é opcional no frontend (só a enviamos ao criar)
     nivelPermissao: NivelPermissao;
-
-    constructor(id: number, nome: string, telefone: string, endereco: string, email: string, senha?: string, nivelPermissao?: NivelPermissao) {
-        this.id = id;
-        this.nome = nome;
-        this.telefone = telefone;
-        this.endereco = endereco;
-        this.email = email;
-        this.senha = senha || ''; 
-        this.nivelPermissao = nivelPermissao || NivelPermissao.OPERADOR;
-    }
-    autenticar(senhaDigitada: string): boolean {
-        return this.senha === senhaDigitada;
-    }
+    // Removemos o método autenticar()
 }

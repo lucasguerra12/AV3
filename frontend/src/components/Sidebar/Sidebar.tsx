@@ -3,8 +3,14 @@ import './Sidebar.css';
 import logoImage from '../../assets/logo_branco.png';
 import { NavLink } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { Funcionario } from '../../models/Funcionario';
+import { NivelPermissao } from '../../models/enums'; // 1. IMPORTAR O ENUM
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+    currentUser: Funcionario | null;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const toggleSidebar = (): void => {
@@ -33,22 +39,29 @@ const Sidebar: React.FC = () => {
                             Dashboard
                         </NavLink>
                     </li>
-                    <li>
-                        <NavLink
-                            to="/funcionarios"
-                            className={({ isActive }) =>
-                                'menu-item' + (isActive ? ' active' : '')
-                            }
-                        >
-                            Funcionários
-                        </NavLink>
-                    </li>
-                    <li>
-                        <div className="menu-item">Configurações</div>
-                    </li>
+                    
+                    {/* 2. CORREÇÃO: Comparar com o ENUM, não com a string */}
+                    {currentUser?.nivelPermissao === NivelPermissao.ADMINISTRADOR && (
+                        <li>
+                            <NavLink
+                                to="/funcionarios"
+                                className={({ isActive }) =>
+                                    'menu-item' + (isActive ? ' active' : '')
+                                }
+                            >
+                                Funcionários
+                            </NavLink>
+                        </li>
+                    )}
                 </ul>
 
                 <div className="sidebar-footer">
+                    {currentUser && (
+                        <div className="user-info">
+                            <strong>{currentUser.nome}</strong>
+                            <small>{currentUser.email}</small>
+                        </div>
+                    )}
                     <div className="menu-item">Sair</div>
                 </div>
             </div>

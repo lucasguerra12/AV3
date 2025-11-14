@@ -20,9 +20,17 @@ const Funcionarios = ({ currentUser, funcionarios, onAdicionarFuncionario, onRem
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if(!nome || !email || !senha) return alert("Preencha todos os campos.");
+        if(!nome || !email || !senha) return alert("Preencha todos os campos, incluindo a senha.");
 
-        const novoFuncionario = new Funcionario(0, nome, '', '', email, senha, nivel);
+        const novoFuncionario: Funcionario = {
+            id: 0, 
+            nome,
+            email,
+            senha,
+            nivelPermissao: nivel,
+            telefone: '',
+            endereco: ''
+        };
         onAdicionarFuncionario(novoFuncionario);
         
         setNome('');
@@ -32,19 +40,21 @@ const Funcionarios = ({ currentUser, funcionarios, onAdicionarFuncionario, onRem
 
     return (
         <div className="funcionarios-layout">
-            <Sidebar />
+            <Sidebar currentUser={currentUser} />
             <main className="main-content">
                 <header className="header"><h2>Gestão de Funcionários</h2></header>
-                {}
+                
                 {currentUser && currentUser.nivelPermissao === NivelPermissao.ADMINISTRADOR && (
                     <section className="add-form-container">
                         <h3>Adicionar Novo Funcionário</h3>
                         <form onSubmit={handleSubmit} className="add-form">
                             <input type="text" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required />
                             <input type="email" placeholder="Email (login)" value={email} onChange={e => setEmail(e.target.value)} required />
+                            <input type="password" placeholder="Senha Provisória" value={senha} onChange={e => setSenha(e.target.value)} required />
                             <select value={nivel} onChange={e => setNivel(e.target.value as NivelPermissao)}>
                                 <option value={NivelPermissao.OPERADOR}>Operador</option>
                                 <option value={NivelPermissao.ENGENHEIRO}>Engenheiro</option>
+                                {/* CORREÇÃO: Usar o ENUM aqui */}
                                 <option value={NivelPermissao.ADMINISTRADOR}>Administrador</option>
                             </select>
                             <button type="submit" className="add-button-small">Adicionar</button>

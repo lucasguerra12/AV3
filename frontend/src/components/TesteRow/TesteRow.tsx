@@ -2,48 +2,33 @@ import React from 'react';
 import './TesteRow.css';
 import { Teste } from '../../models/Teste';
 import { ResultadoTeste } from '../../models/enums';
-import { FaTrash } from 'react-icons/fa'; 
 
 interface TesteRowProps {
     teste: Teste;
-    index: number;
-    onRemove: (index: number) => void;
+    index: number; 
     canManage: boolean;
+    onRemove: (testeId: number) => void;
 }
 
-const getResultadoInfo = (resultado: ResultadoTeste) => {
-    switch (resultado) {
-        case ResultadoTeste.APROVADO:
-            return { text: 'Aprovado', className: 'resultado-aprovado' };
-        case ResultadoTeste.REPROVADO:
-        default:
-            return { text: 'Reprovado', className: 'resultado-reprovado' };
+const TesteRow: React.FC<TesteRowProps> = ({ teste, index, canManage, onRemove }) => {
+
+    const handleRemove = () => {
+        if (window.confirm(`Tem a certeza que quer remover o teste "${teste.tipo}"?`)) {
+            onRemove(teste.id);
+        }
     }
-};
 
-
-const TesteRow = ({ teste, index, onRemove, canManage }: TesteRowProps) => {
-    const resultadoInfo = getResultadoInfo(teste.resultado);
+    const isAprovado = teste.resultado === ResultadoTeste.APROVADO;
 
     return (
-        <div className="teste-row">
-            <div className="teste-info tipo">{teste.tipo}</div>
-            <div className="teste-info resultado">
-                <span className={`resultado-pill ${resultadoInfo.className}`}>
-                    {resultadoInfo.text}
-                </span>
+        <div className={`teste-row ${isAprovado ? 'aprovado' : 'reprovado'}`}>
+            <div className="teste-info">
+                <span className="teste-nome">Teste #{index + 1}: {teste.tipo}</span>
+                <span className="teste-resultado">{teste.resultado}</span>
             </div>
-            <div className="teste-actions">
-                {canManage && (
-                    <button 
-                        className="action-button remove"
-                        onClick={() => onRemove(index)}
-                        title="Remover Teste"
-                    >
-                        <FaTrash />
-                    </button>
-                )}
-            </div>
+            {canManage && (
+                <button onClick={handleRemove} className="remove-btn-small">×</button>
+            )}
         </div>
     );
 };
