@@ -17,7 +17,13 @@ export class Relatorio {
         
         conteudo += `\nETAPAS REALIZADAS\n`;
         if (aeronave.etapas.length > 0) {
-            aeronave.etapas.forEach(e => { conteudo += `- ${e.nome} (Prazo: ${e.prazo.toLocaleDateString()}) - Status: ${e.status}\n`; });
+            aeronave.etapas.forEach(e => {
+                // --- CORREÇÃO AQUI ---
+                // Convertemos a string (vinda da API) para um objeto Date
+                const prazoDate = new Date(e.prazo);
+                // Agora podemos usar .toLocaleDateString() sem erro
+                conteudo += `- ${e.nome} (Prazo: ${prazoDate.toLocaleDateString()}) - Status: ${e.status}\n`; 
+            });
         } else {
             conteudo += `- Nenhuma etapa cadastrada.\n`;
         }
@@ -31,5 +37,4 @@ export class Relatorio {
 
         return conteudo;
     }
-
 }
