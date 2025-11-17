@@ -1,32 +1,48 @@
 import { Request, Response } from 'express';
-import { prisma } from '../server'; // Importamos o cliente Prisma do server.ts
+import { prisma } from '../server';
+import { NivelPermissao } from '@prisma/client'; // Importar o Enum
 
-/**
- * Lida com a tentativa de login de um funcionário
- */
 export const login = async (req: Request, res: Response) => {
     const { email, senha } = req.body;
 
-    if (!email) {
-        return res.status(400).json({ message: 'Email é obrigatório' });
-    }
-    
-    // Na AV3, o login deve pedir email E senha.
-    if (!senha) {
-        return res.status(400).json({ message: 'Senha é obrigatória' });
+    if (!email || !senha) {
+        return res.status(400).json({ message: 'Email e Senha são obrigatórios' });
     }
 
     try {
-        const funcionario = await prisma.funcionario.findUnique({
+        let funcionario = await prisma.funcionario.findUnique({
             where: { email: email },
         });
 
+        // --- INÍCIO DA NOVA LÓGICA ---
         if (!funcionario) {
-            return res.status(404).json({ message: 'Utilizador não encontrado' });
+            // Utilizador não encontrado. Vamos verificar se é o primeiro login.
+            const totalUsers = await prisma.funcionario.count();
+
+            if (totalUsers === 0) {
+                // A tabela está vazia! Este é o primeiro utilizador.
+                // Vamos criá-lo como Administrador.
+                console.log("Primeiro login detectado. Criando novo Administrador...");
+                
+                funcionario = await prisma.funcionario.create({
+                    data: {
+                        nome: "Admin (Auto-Gerado)", // Pode mudar o nome depois
+                        email: email,
+                        senha: senha, // (Em produção, usaríamos hash)
+                        nivelPermissao: NivelPermissao.ADMINISTRADOR,
+                    }
+                });
+                
+                // O 'funcionario' agora existe. O código continua normalmente.
+
+            } else {
+                // A tabela não está vazia, o utilizador simplesmente não existe.
+                return res.status(404).json({ message: 'Utilizador não encontrado' });
+            }
         }
-        
-        // Verificação de senha (simples, como na AV1/AV2)
-        // NOTA: Num sistema real, usaríamos bcrypt.compare()
+        // --- FIM DA NOVA LÓGICA ---
+
+        // Verificação de senha (como antes)
         if (funcionario.senha !== senha) {
            return res.status(401).json({ message: 'Senha incorreta' });
         }

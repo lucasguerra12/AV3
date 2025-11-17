@@ -9,10 +9,11 @@ import { NivelPermissao } from '../../models/enums'; // 2. Importar o enum
 // 3. Definir a interface de props que o componente espera
 interface SidebarProps {
     currentUser: Funcionario | null;
+    onLogout: () => void;
 }
 
 // 4. Usar a interface de props (React.FC<SidebarProps>) e receber a prop { currentUser }
-const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentUser, onLogout }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const toggleSidebar = (): void => {
@@ -65,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                             <small>{currentUser.email}</small>
                         </div>
                     )}
-                    <div className="menu-item">Sair</div> {/* TODO: Implementar Logout */}
+                    <div className="menu-item" onClick={onLogout}>Sair</div> {/* TODO: Implementar Logout */}
                 </div>
             </div>
         </>

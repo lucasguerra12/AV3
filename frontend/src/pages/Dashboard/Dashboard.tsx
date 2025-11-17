@@ -13,9 +13,10 @@ interface DashboardProps {
     currentUser: Funcionario | null;
     aeronaves: Aeronave[];
     onAdicionarAeronave: (novaAeronave: Aeronave) => void;
+    onLogout: () => void;
 }
 
-const Dashboard = ({ currentUser, aeronaves, onAdicionarAeronave }: DashboardProps) => {
+const Dashboard = ({ currentUser, aeronaves, onAdicionarAeronave, onLogout }: DashboardProps) => {
     const [codigo, setCodigo] = useState('');
     const [modelo, setModelo] = useState('');
     const [tipo, setTipo] = useState<TipoAeronave>(TipoAeronave.COMERCIAL);
@@ -64,7 +65,7 @@ const Dashboard = ({ currentUser, aeronaves, onAdicionarAeronave }: DashboardPro
     return (
         <div className="dashboard-layout">
             {/* 4. CORREÇÃO: Passar a prop 'currentUser' */}
-            <Sidebar currentUser={currentUser} />
+            <Sidebar currentUser={currentUser} onLogout={onLogout} />
             <main className="main-content">
                 <header className="header">
                     <div className="header-title">

@@ -44,6 +44,12 @@ function App() {
       alert(`Erro no login: ${error.message}`);
     }
   };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null); 
+  };
+
   const handleAdicionarAeronave = async (novaAeronave: Aeronave) => {
     try {
       const aeronaveCriada = await api.apiAdicionarAeronave({
@@ -107,7 +113,7 @@ function App() {
           />
           <Route 
             path="/dashboard" 
-            element={isAuthenticated ? <Dashboard currentUser={currentUser} aeronaves={aeronaves} onAdicionarAeronave={handleAdicionarAeronave} /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Dashboard currentUser={currentUser} aeronaves={aeronaves} onAdicionarAeronave={handleAdicionarAeronave} onLogout={handleLogout} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/aeronave/:codigo" 
@@ -116,13 +122,14 @@ function App() {
                   currentUser={currentUser!} 
                   onUpdateAeronave={handleUpdateAeronave} 
                   todosFuncionarios={funcionarios} 
+                  onLogout={handleLogout}
                 />
               ) : <Navigate to="/login" />
             } 
           />
           <Route 
             path="/funcionarios" 
-            element={isAuthenticated ? <Funcionarios currentUser={currentUser} funcionarios={funcionarios} onAdicionarFuncionario={handleAdicionarFuncionario} onRemoverFuncionario={handleRemoverFuncionario} /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Funcionarios currentUser={currentUser} funcionarios={funcionarios} onAdicionarFuncionario={handleAdicionarFuncionario} onRemoverFuncionario={handleRemoverFuncionario}  onLogout={handleLogout} /> : <Navigate to="/login" />} 
           />
           <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
         </Routes>

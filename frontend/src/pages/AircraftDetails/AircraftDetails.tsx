@@ -23,9 +23,10 @@ interface AircraftDetailsProps {
     currentUser: Funcionario;
     onUpdateAeronave: (aeronaveAtualizada: Aeronave) => void;
     todosFuncionarios: Funcionario[];
+    onLogout: () => void;
 }
 
-const AircraftDetails: React.FC<AircraftDetailsProps> = ({ currentUser, onUpdateAeronave, todosFuncionarios }) => {
+const AircraftDetails: React.FC<AircraftDetailsProps> = ({ currentUser, onUpdateAeronave, todosFuncionarios, onLogout }) => {
     const { codigo } = useParams<{ codigo: string }>();
     const navigate = useNavigate();
 
@@ -192,7 +193,7 @@ const AircraftDetails: React.FC<AircraftDetailsProps> = ({ currentUser, onUpdate
 
     return (
         <div className="details-layout">
-            <Sidebar currentUser={currentUser} />
+            <Sidebar currentUser={currentUser} onLogout={onLogout} />
             <main className="main-content">
                 <header className="details-header">
                     <h1>{aeronave.modelo} <span className="aircraft-code">(Cód: {aeronave.codigo})</span></h1>

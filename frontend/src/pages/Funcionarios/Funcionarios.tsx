@@ -10,9 +10,10 @@ interface FuncionariosProps {
     funcionarios: Funcionario[];
     onAdicionarFuncionario: (novoFuncionario: Funcionario) => void;
     onRemoverFuncionario: (idFuncionario: number) => void;
+    onLogout: () => void;
 }
 
-const Funcionarios = ({ currentUser, funcionarios, onAdicionarFuncionario, onRemoverFuncionario }: FuncionariosProps) => {
+const Funcionarios = ({ currentUser, funcionarios, onAdicionarFuncionario, onRemoverFuncionario, onLogout }: FuncionariosProps) => {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -40,7 +41,7 @@ const Funcionarios = ({ currentUser, funcionarios, onAdicionarFuncionario, onRem
 
     return (
         <div className="funcionarios-layout">
-            <Sidebar currentUser={currentUser} />
+            <Sidebar currentUser={currentUser} onLogout={onLogout} />
             <main className="main-content">
                 <header className="header"><h2>Gestão de Funcionários</h2></header>
                 
