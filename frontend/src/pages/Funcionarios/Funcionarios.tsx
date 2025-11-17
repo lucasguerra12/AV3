@@ -54,7 +54,6 @@ const Funcionarios = ({ currentUser, funcionarios, onAdicionarFuncionario, onRem
                             <select value={nivel} onChange={e => setNivel(e.target.value as NivelPermissao)}>
                                 <option value={NivelPermissao.OPERADOR}>Operador</option>
                                 <option value={NivelPermissao.ENGENHEIRO}>Engenheiro</option>
-                                {/* CORREÇÃO: Usar o ENUM aqui */}
                                 <option value={NivelPermissao.ADMINISTRADOR}>Administrador</option>
                             </select>
                             <button type="submit" className="add-button-small">Adicionar</button>

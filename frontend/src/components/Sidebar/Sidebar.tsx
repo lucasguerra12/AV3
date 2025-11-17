@@ -3,13 +3,15 @@ import './Sidebar.css';
 import logoImage from '../../assets/logo_branco.png';
 import { NavLink } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import { Funcionario } from '../../models/Funcionario';
-import { NivelPermissao } from '../../models/enums'; // 1. IMPORTAR O ENUM
+import { Funcionario } from '../../models/Funcionario'; // 1. Importar o modelo
+import { NivelPermissao } from '../../models/enums'; // 2. Importar o enum
 
+// 3. Definir a interface de props que o componente espera
 interface SidebarProps {
     currentUser: Funcionario | null;
 }
 
+// 4. Usar a interface de props (React.FC<SidebarProps>) e receber a prop { currentUser }
 const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -40,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                         </NavLink>
                     </li>
                     
-                    {/* 2. CORREÇÃO: Comparar com o ENUM, não com a string */}
+                    {/* 5. Usar o enum NivelPermissao para a verificação */}
                     {currentUser?.nivelPermissao === NivelPermissao.ADMINISTRADOR && (
                         <li>
                             <NavLink
@@ -56,13 +58,14 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                 </ul>
 
                 <div className="sidebar-footer">
+                    {/* 6. Adicionar uma secção para mostrar quem está logado */}
                     {currentUser && (
                         <div className="user-info">
                             <strong>{currentUser.nome}</strong>
                             <small>{currentUser.email}</small>
                         </div>
                     )}
-                    <div className="menu-item">Sair</div>
+                    <div className="menu-item">Sair</div> {/* TODO: Implementar Logout */}
                 </div>
             </div>
         </>

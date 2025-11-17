@@ -1,6 +1,7 @@
 .funcionario-row {
     display: grid;
-    grid-template-columns: 2.5fr 3fr 2fr 1fr;
+    /* Esta linha é a correção: ela separa os 4 itens em colunas */
+    grid-template-columns: 2.5fr 3fr 2fr 1fr; 
     align-items: center;
     gap: 20px;
     padding: 15px 20px;
@@ -29,9 +30,26 @@
     display: inline-block;
 }
 
+/* Cores das pills (copiado da AV2) */
 .permissao-admin { background-color: #dc3545; }
 .permissao-engenheiro { background-color: #007bff; }
 .permissao-operador { background-color: #6c757d; }
+
+/* Botão de remover (para ficar igual ao da AV2) */
+.action-button { 
+    background: none; 
+    border: 1px solid transparent; 
+    cursor: pointer; 
+    padding: 6px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: all 0.2s; 
+}
+.action-button:hover { background-color: #f1f3f5; }
+.action-button.remove { color: #dc3545; }
+
 
 @media (max-width: 768px) {
     .funcionario-row {
