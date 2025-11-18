@@ -7,8 +7,7 @@ import * as api from './services/api';
 import { Aeronave } from './models/Aeronave';
 import { Funcionario } from './models/Funcionario';
 import { NivelPermissao } from './models/enums';
-
-import './App.css';
+import './App.css'; 
 
 const Dashboard = React.lazy(() => import('./pages/Dashboard/Dashboard'));
 const AircraftDetails = React.lazy(() => import('./pages/AircraftDetails/AircraftDetails'));
@@ -21,11 +20,19 @@ function App() {
   const [aeronaves, setAeronaves] = useState<Aeronave[]>([]);
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   
+  // Função para recarregar dados do servidor (útil para garantir sincronia)
+  const refreshAeronaves = async () => {
+    try {
+      const data = await api.apiListarAeronaves();
+      setAeronaves(data);
+    } catch (err) {
+      console.error("Erro ao recarregar aeronaves:", err);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
-      api.apiListarAeronaves()
-        .then((data: Aeronave[]) => setAeronaves(data))
-        .catch((err: any) => console.error("Erro ao carregar aeronaves:", err)); 
+      refreshAeronaves(); // Carrega ao entrar
 
       if (currentUser?.nivelPermissao === NivelPermissao.ADMINISTRADOR) {
         api.apiListarFuncionarios()
@@ -34,11 +41,15 @@ function App() {
       }
     }
   }, [isAuthenticated, currentUser?.nivelPermissao]); 
+
+
   const handleLogin = async (email: string, senha: string) => {
     try {
       const user = await api.apiLogin(email, senha);
-      setCurrentUser(user);
-      setIsAuthenticated(true);
+      if (user) {
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+      }
     } catch (error: any) {
       console.error("Erro no login:", error);
       alert(`Erro no login: ${error.message}`);
@@ -47,7 +58,8 @@ function App() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setCurrentUser(null); 
+    setCurrentUser(null);
+    setAeronaves([]); 
   };
 
   const handleAdicionarAeronave = async (novaAeronave: Aeronave) => {
@@ -60,14 +72,13 @@ function App() {
         alcance: novaAeronave.alcance
       });
       
-      setAeronaves(estadoAnterior => [
-        ...estadoAnterior, 
-        { ...aeronaveCriada, pecas: [], etapas: [], testes: [] } 
-      ]);
+      // Atualiza a lista imediatamente com a resposta do servidor (que tem o ID)
+      setAeronaves(prev => [...prev, { ...aeronaveCriada, pecas: [], etapas: [], testes: [] }]);
     } catch (error: any) {
       alert(`Erro ao adicionar aeronave: ${error.message}`);
     }
   };
+
   const handleAdicionarFuncionario = async (novoFuncionario: Funcionario) => {
     try {
         if (!novoFuncionario.senha) {
@@ -83,26 +94,31 @@ function App() {
             endereco: novoFuncionario.endereco
         };
         const funcionarioCriado = await api.apiAdicionarFuncionario(dataParaApi);
-        setFuncionarios(estadoAnterior => [...estadoAnterior, funcionarioCriado]);
+        setFuncionarios(prev => [...prev, funcionarioCriado]);
     } catch (error: any) {
         alert(`Erro ao adicionar funcionário: ${error.message}`);
     }
   };
+
   const handleRemoverFuncionario = async (id: number) => {
     try {
       await api.apiRemoverFuncionario(id);
-      setFuncionarios(estadoAnterior => estadoAnterior.filter(f => f.id !== id));
+      setFuncionarios(prev => prev.filter(f => f.id !== id));
     } catch (error: any) {
       alert(`Erro ao remover funcionário: ${error.message}`);
     }
   };
+
+  // ESTA É A FUNÇÃO MÁGICA
+  // Ela atualiza uma aeronave específica na lista do Dashboard
   const handleUpdateAeronave = (aeronaveAtualizada: Aeronave) => {
-    setAeronaves(estadoAnterior => 
-      estadoAnterior.map(a => 
+    setAeronaves(prevAeronaves => 
+      prevAeronaves.map(a => 
         a.id === aeronaveAtualizada.id ? aeronaveAtualizada : a
       )
     );
   };
+
   return (
     <Router>
       <Suspense fallback={<div className="loading-fullscreen">A carregar...</div>}>
@@ -111,26 +127,30 @@ function App() {
             path="/login" 
             element={!isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />} 
           />
+          
           <Route 
             path="/dashboard" 
             element={isAuthenticated ? <Dashboard currentUser={currentUser} aeronaves={aeronaves} onAdicionarAeronave={handleAdicionarAeronave} onLogout={handleLogout} /> : <Navigate to="/login" />} 
           />
+          
           <Route 
             path="/aeronave/:codigo" 
             element={isAuthenticated ? (
                 <AircraftDetails 
                   currentUser={currentUser!} 
-                  onUpdateAeronave={handleUpdateAeronave} 
+                  onUpdateAeronave={handleUpdateAeronave} // Passamos a função aqui
                   todosFuncionarios={funcionarios} 
                   onLogout={handleLogout}
                 />
               ) : <Navigate to="/login" />
             } 
           />
+          
           <Route 
             path="/funcionarios" 
-            element={isAuthenticated ? <Funcionarios currentUser={currentUser} funcionarios={funcionarios} onAdicionarFuncionario={handleAdicionarFuncionario} onRemoverFuncionario={handleRemoverFuncionario}  onLogout={handleLogout} /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Funcionarios currentUser={currentUser} funcionarios={funcionarios} onAdicionarFuncionario={handleAdicionarFuncionario} onRemoverFuncionario={handleRemoverFuncionario} onLogout={handleLogout} /> : <Navigate to="/login" />} 
           />
+          
           <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
         </Routes>
       </Suspense>
