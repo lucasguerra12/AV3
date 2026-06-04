@@ -8,36 +8,41 @@ import { Inventario } from './pages/Inventario';
 import { Equipe } from './pages/Equipe';
 import { Login } from './pages/Login';
 import { Relatorio } from './pages/Relatorio';
-import RelatorioQualidade from './pages/RelatorioQualidade';
 
-// Componente que protege as páginas de quem não está logado
+// CORREÇÃO AQUI: As chavetas garantem que o ficheiro exato é puxado
+import { RelatorioQualidade } from './pages/RelatorioQualidade'; 
+
 function ProtectedRoutes() {
-  const { usuarioLogado } = useSystem();
+  const { usuarioLogado, carregando } = useSystem();
   
+  if (carregando) {
+     return <div className="min-h-screen flex items-center justify-center bg-background text-white">A Carregar Sistema...</div>;
+  }
+
   if (!usuarioLogado) {
     return <Navigate to="/login" replace />;
   }
 
-  // Se estiver logado, o Outlet permite que o React Router continue a renderizar as rotas filhas
   return <Outlet />;
 }
 
 function App() {
-  console.log("%c✈️ Aerocode SPA - Desenvolvido por Lucas Fernando Guerra - AV2", "color: #3b82f6; font-size: 16px; font-weight: bold;");
+  console.log("%c✈️ Aerocode SPA - Desenvolvido por Lucas Fernando Guerra - AV3", "color: #3b82f6; font-size: 16px; font-weight: bold;");
   return (
     <SystemProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           
-          {/* Todas as rotas dentro deste bloco exigem Login para serem acessadas */}
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="aeronaves" element={<Aeronaves />} />
               <Route path="aeronaves/:id" element={<AeronaveDetalhe />} />
               <Route path="aeronaves/:id/relatorio" element={<Relatorio />} /> 
-              <Route path="aeronaves/:id/relatorio-qualidade" element={<RelatorioQualidade />} />
+              
+              <Route path="relatorio-qualidade" element={<RelatorioQualidade />} />
+              
               <Route path="inventario" element={<Inventario />} />
               <Route path="equipe" element={<Equipe />} />
             </Route>

@@ -1,16 +1,16 @@
-// app/src/pages/RelatorioQualidade.tsx
 import { useState } from 'react';
 import { api } from '../services/api';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface Metrica {
-  usuarios: number;
+  usuarios: string;
   tempoResposta: number;
   tempoProcessamento: number;
   latencia: number;
 }
 
-export default function RelatorioQualidade() {
+// CORREÇÃO: Usando exportação nomeada para não falhar no Router
+export function RelatorioQualidade() {
   const [dados, setDados] = useState<Metrica[]>([]);
   const [testando, setTestando] = useState(false);
 
@@ -21,7 +21,11 @@ export default function RelatorioQualidade() {
       const teste5 = await api.executarTesteCarga(5);
       const teste10 = await api.executarTesteCarga(10);
       
-      setDados([teste1, teste5, teste10]);
+      setDados([
+        { ...teste1, usuarios: '1 Usr' },
+        { ...teste5, usuarios: '5 Usr' },
+        { ...teste10, usuarios: '10 Usr' }
+      ]);
     } catch (error) {
       console.error("Erro no teste de carga", error);
     } finally {
@@ -30,36 +34,79 @@ export default function RelatorioQualidade() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4 text-gray-800">Desempenho Crítico (AV3)</h1>
+    <div className="p-6 overflow-y-auto h-full text-slate-800 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-4">Relatório de Qualidade - Sistema Crítico (AV3)</h1>
       
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-2">Metodologia de Medição</h2>
-        <p className="text-gray-600 mb-4">
-          Conforme exigido para sistemas críticos, as medições foram programadas disparando requisições simultâneas. O servidor registra o tempo interno no banco (Tempo de Processamento) e o cliente calcula o Tempo de Resposta total. A Latência é a diferença dividida por dois. (Valores em ms).
-        </p>
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <h2 className="text-xl font-semibold mb-2 border-b pb-2">Metodologia e Obtenção das Métricas</h2>
+        <div className="text-gray-700 text-sm mb-6 space-y-3 mt-4">
+          <p>
+            <strong>Como as métricas foram obtidas:</strong> Para atender aos requisitos de um sistema crítico do setor aeroespacial, implementámos uma rota analítica dedicada no back-end. Esta rota realiza interações e consultas relacionais massivas no banco de dados através do Prisma ORM.
+          </p>
+          <ul className="list-disc ml-6 space-y-1">
+            <li><strong>Tempo de Processamento (Servidor):</strong> Medido no back-end utilizando a API <code>performance.now()</code>.</li>
+            <li><strong>Tempo de Resposta Total:</strong> Medido no front-end em React, contemplando o percurso integral de rede.</li>
+            <li><strong>Latência:</strong> Calculada matematicamente subtraindo o processamento interno do tempo total, dividido pela ida e volta.</li>
+          </ul>
+        </div>
+        
         <button 
           onClick={iniciarTestes} 
           disabled={testando}
-          className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-3 rounded-md font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-md"
         >
-          {testando ? 'Executando testes...' : 'Rodar Teste (1, 5 e 10 Usuários)'}
+          {testando ? 'A analisar Sistemas...' : 'Executar Teste de Estresse (1, 5 e 10 Utilizadores)'}
         </button>
       </div>
 
       {dados.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-md h-96">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dados} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="usuarios" tickFormatter={(tick) => `${tick} Usuário(s)`} />
-              <YAxis label={{ value: 'Milissegundos (ms)', angle: -90, position: 'insideLeft' }} />
-              <Tooltip formatter={(value: any) => typeof value === 'number' ? `${value.toFixed(2)} ms` : value} />              <Legend />
-              <Bar dataKey="tempoProcessamento" name="Tempo de Processamento" fill="#3b82f6" />
-              <Bar dataKey="latencia" name="Latência (Rede)" fill="#f59e0b" />
-              <Bar dataKey="tempoResposta" name="Tempo de Resposta Total" fill="#10b981" />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-10">
+          
+          <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 flex flex-col min-h-[350px]">
+            <h3 className="text-center font-bold text-slate-700 mb-6">Tempo de Processamento (ms)</h3>
+            <div className="flex-1 w-full min-h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dados} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="usuarios" />
+                  <YAxis />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                  <Bar dataKey="tempoProcessamento" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 flex flex-col min-h-[350px]">
+            <h3 className="text-center font-bold text-slate-700 mb-6">Latência de Rede (ms)</h3>
+            <div className="flex-1 w-full min-h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dados} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="usuarios" />
+                  <YAxis />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                  <Bar dataKey="latencia" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 flex flex-col min-h-[350px]">
+            <h3 className="text-center font-bold text-slate-700 mb-6">Tempo de Resposta Total (ms)</h3>
+            <div className="flex-1 w-full min-h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dados} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="usuarios" />
+                  <YAxis />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                  <Bar dataKey="tempoResposta" fill="#10b981" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
         </div>
       )}
     </div>

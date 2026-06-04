@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import type { ReactNode } from 'react'; 
-// Importe também o Funcionario e Peca para não quebrar outras páginas da AV2
+import type { ReactNode } from 'react'; // CORREÇÃO 1: Importação exclusiva de tipo
 import type { Aeronave, Funcionario, Peca } from '../domain/types'; 
 import { api } from '../services/api';
 
@@ -8,15 +7,13 @@ interface SystemContextType {
   aeronaves: Aeronave[];
   carregando: boolean;
   recarregarDados: () => void;
-  
-  // Propriedades do sistema original (AV2) restauradas:
   usuarioLogado: Funcionario | null;
   login: (usuario: string, senha?: string) => boolean;
   logout: () => void;
-  
-  // Caso tenha tabelas de equipe/inventario no contexto:
   funcionarios: Funcionario[];
   pecas: Peca[];
+  logs: any[];
+  inventario: Peca[];
 }
 
 export const SystemContext = createContext<SystemContextType>({} as SystemContextType);
@@ -26,21 +23,28 @@ export function useSystem() {
 }
 
 export function SystemProvider({ children }: { children: ReactNode }) {
-  // Estados da Aplicação
   const [aeronaves, setAeronaves] = useState<Aeronave[]>([]);
-  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
-  const [pecas, setPecas] = useState<Peca[]>([]);
-  const [carregando, setCarregando] = useState(true);
   
-  // Estado de Autenticação (Restaurado)
+  // CORREÇÃO 2: Removido setFuncionarios e setPecas para evitar erro de "variável não lida"
+  const [funcionarios] = useState<Funcionario[]>([]);
+  const [pecas] = useState<Peca[]>([]);
+  
+  const [carregando, setCarregando] = useState(true);
   const [usuarioLogado, setUsuarioLogado] = useState<Funcionario | null>(null);
 
-  // Função que busca dados reais do MySQL (AV3)
+  // Mock de Logs para a Dashboard funcionar
+  const logsMock = [
+    { id: 1, time: new Date().toLocaleTimeString(), tag: 'DB', color: 'bg-emerald-500/20 text-emerald-500', text: 'Conexão Prisma/MySQL estabelecida.' },
+    { id: 2, time: new Date().toLocaleTimeString(), tag: 'SYS', color: 'bg-blue-500/20 text-blue-500', text: 'Módulos da AV3 ativados com sucesso.' }
+  ];
+
   const carregarDados = async () => {
     setCarregando(true);
     try {
       const dados = await api.getAeronaves();
-      setAeronaves(dados);
+      if(Array.isArray(dados)) {
+        setAeronaves(dados);
+      }
     } catch (error) {
       console.error("Erro ao buscar aeronaves da API", error);
     } finally {
@@ -52,9 +56,8 @@ export function SystemProvider({ children }: { children: ReactNode }) {
     carregarDados();
   }, []);
 
-  // --- Funções de Autenticação (Restauradas) ---
-  const login = (usuario: string, senha?: string) => {
-    // Mock simplificado para permitir a entrada no sistema
+  // CORREÇÃO 3: O uso do underline (_senha) diz ao TypeScript para ignorar que a variável não está sendo lida na função
+  const login = (usuario: string, _senha?: string) => {
     if (usuario) {
       setUsuarioLogado({
         id: '1',
@@ -82,7 +85,9 @@ export function SystemProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       funcionarios,
-      pecas
+      pecas,
+      logs: logsMock,
+      inventario: pecas
     }}>
       {children}
     </SystemContext.Provider>
