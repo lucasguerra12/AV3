@@ -1,3 +1,6 @@
+
+
+```markdown
 # ✈️ Aerocode - Gestão de Produção Aeroespacial (AV3)
 
 **Desenvolvido por:** Lucas Fernando Guerra  
@@ -57,4 +60,81 @@ Para atender aos requisitos do sistema crítico aeroespacial, foi implementada u
 ## 🕵️‍♂️ Sistema Anti-Clone (Easter Eggs)
 Para atestar a autoria exclusiva do sistema e evitar cópias, foram inseridas 3 verificações de segurança:
 1. **Console Signature:** Pressionando `F12` e abrindo o Console, uma assinatura de desenvolvimento é exibida nativamente.
-2. **Keylogger Secreto:** Em qualquer tela do sistema, se o usuário digitar a palavra secreta `av3lucas` no
+2. **Keylogger Secreto:** Em qualquer tela do sistema, se o usuário digitar a palavra secreta `av3lucas` no teclado, a interface congelará exibindo um alerta crítico de autoria do sistema.
+3. **Meta Tag Oculta:** O arquivo `index.html` possui uma assinatura rastreável no `<head>`.
+
+---
+
+## ⚙️ Como Rodar o Projeto
+
+Siga os passos abaixo para testar o sistema localmente em sua máquina.
+
+### Pré-requisitos
+- Node.js instalado (v18 ou superior).
+- Servidor MySQL rodando (ex: XAMPP, WAMP ou MySQL nativo).
+
+### Passo 1: Configuração do Banco de Dados (Back-end)
+1. Abra o terminal e navegue até a pasta `backend`.
+2. Instale as dependências:
+   ```bash
+   npm install
+
+```
+
+3. Crie um arquivo chamado `.env` na raiz da pasta `backend` com a sua string de conexão MySQL (ajuste usuário e senha conforme seu ambiente local). Exemplo:
+```env
+DATABASE_URL="mysql://root:@localhost:3306/aerocode"
+
+```
+
+
+4. Sincronize as tabelas do Prisma com o seu banco de dados:
+```bash
+npx prisma db push
+
+```
+
+
+5. Inicie o servidor Back-end:
+```bash
+npm run dev
+
+```
+
+
+*O terminal informará: `🚀 Back-end rodando na porta 3000`.*
+
+### Passo 2: Execução da Interface (Front-end)
+
+1. Mantenha o terminal do Back-end aberto e abra um **novo terminal**.
+2. Navegue até a pasta `app`.
+3. Instale as dependências:
+```bash
+npm install
+
+```
+
+
+4. Inicie o servidor Vite:
+```bash
+npm run dev
+
+```
+
+
+5. Acesse a URL fornecida pelo Vite no navegador (geralmente `http://localhost:5173`).
+
+### 🔑 Acesso ao Sistema
+
+Como o sistema permite a criação dinâmica de usuários na tela de **Gestão de Equipe**, o primeiro login do Administrador está desbloqueado para facilitar a avaliação do professor.
+
+* **Identificação (Usuário):** *Qualquer nome* (ex: `admin`)
+* **Senha:** *Qualquer senha*
+* Clique em **Acessar Sistema**.
+
+```
+
+***
+
+
+```
