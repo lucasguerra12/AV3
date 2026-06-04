@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import type { ReactNode } from 'react';
+import type { ReactNode } from 'react'; 
 import type { Aeronave, Funcionario, Peca, TipoTeste, StatusEtapa, ResultadoTeste } from '../domain/types'; 
 import { api } from '../services/api';
 
@@ -19,6 +19,10 @@ interface SystemContextType {
   atualizarStatusEtapa: (aId: string, eId: string, s: StatusEtapa) => void; alocarFuncionario: (aId: string, eId: string, fId: string) => void;
   adicionarTeste: (aId: string, n: string, d: string, t: TipoTeste) => void; removerTeste: (aId: string, tId: string) => void;
   atualizarResultadoTeste: (aId: string, tId: string, r: ResultadoTeste) => void;
+  
+  // FUNÇÕES DA EQUIPA RESTAURADAS
+  adicionarMembroEquipe: (f: any) => void;
+  removerMembroEquipe: (id: string) => void;
 }
 
 export const SystemContext = createContext<SystemContextType>({} as SystemContextType);
@@ -30,10 +34,11 @@ export function SystemProvider({ children }: { children: ReactNode }) {
   const [carregando, setCarregando] = useState(true);
   const [usuarioLogado, setUsuarioLogado] = useState<Funcionario | null>(null);
 
-  const equipe: Funcionario[] = [
+  // EQUIPA AGORA É UM ESTADO DINÂMICO
+  const [equipe, setEquipe] = useState<Funcionario[]>([
     { id: '1', nome: 'Eng. Chefe', telefone: '1199', endereco: 'SJC', usuario: 'admin', nivelPermissao: 'ADMINISTRADOR' },
     { id: '2', nome: 'Operador Alfa', telefone: '1188', endereco: 'SJC', usuario: 'op', nivelPermissao: 'OPERADOR' }
-  ];
+  ]);
 
   const carregarDados = async () => {
     setCarregando(true);
@@ -81,7 +86,16 @@ export function SystemProvider({ children }: { children: ReactNode }) {
   const vincularPeca = (p: string, a: string) => atualizarPeca(p, { aeronaveDestino: a });
   const desvincularPeca = (p: string) => atualizarPeca(p, { aeronaveDestino: null });
 
-  // --- Funções de Detalhes (Etapas e Testes) - Estado Local Imobilizado para UI funcionar instantaneamente ---
+  // --- CRUD EQUIPA ---
+  const adicionarMembroEquipe = (dados: any) => {
+    const novo = { ...dados, id: Math.random().toString() };
+    setEquipe(prev => [...prev, novo]);
+  };
+  const removerMembroEquipe = (id: string) => {
+    setEquipe(prev => prev.filter(f => f.id !== id));
+  };
+
+  // --- Funções de Detalhes (Etapas e Testes) ---
   const adicionarEtapa = (aId: string, nome: string, prazo: string) => {
     setAeronaves(prev => prev.map(a => a.codigo === aId ? { ...a, etapas: [...a.etapas, { id: Math.random().toString(), nome, prazo, status: 'PENDENTE', funcionariosAlocados: [] }] } : a));
   };
@@ -112,7 +126,8 @@ export function SystemProvider({ children }: { children: ReactNode }) {
       registrarAeronave, atualizarAeronave, removerAeronave,
       registrarPeca, atualizarPeca, removerPeca, vincularPeca, desvincularPeca,
       adicionarEtapa, removerEtapa, atualizarStatusEtapa, alocarFuncionario,
-      adicionarTeste, removerTeste, atualizarResultadoTeste
+      adicionarTeste, removerTeste, atualizarResultadoTeste,
+      adicionarMembroEquipe, removerMembroEquipe
     }}>
       {children}
     </SystemContext.Provider>

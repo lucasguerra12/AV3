@@ -33,7 +33,6 @@ export function AeronaveDetalhe() {
   const integridade = etapasTotal === 0 ? 0 : Math.round((aeronave.etapas.filter(e => e.status === 'CONCLUIDA').length / etapasTotal) * 100);
   const possuiTestes = aeronave.testes.length > 0;
   const todosTestesAprovados = possuiTestes && aeronave.testes.every(t => t.resultado === 'APROVADO');
-  const aeronaveProntaParaEntrega = integridade === 100 && todosTestesAprovados;
 
   const handleCriarEtapa = (e: React.FormEvent) => { e.preventDefault(); if (novaEtapaNome) { adicionarEtapa(aeronave.codigo, novaEtapaNome, novaEtapaPrazo); setNovaEtapaNome(''); setNovaEtapaPrazo(''); setIsEtapaModalOpen(false); } };
   const handleCriarTeste = (e: React.FormEvent) => { e.preventDefault(); if (novoTesteNome && novoTesteData) { adicionarTeste(aeronave.codigo, novoTesteNome, novoTesteData, novoTesteTipo); setNovoTesteNome(''); setNovoTesteData(''); setIsTesteModalOpen(false); } };
@@ -48,11 +47,12 @@ export function AeronaveDetalhe() {
         </button>
         <div className="flex items-center gap-4">
           <span className="text-lg font-black text-primary font-headline uppercase tracking-widest">AIRCRAFT_CONTROL_{aeronave.codigo}</span>
-                    {aeronaveProntaParaEntrega && (
-            <button onClick={() => navigate(`/aeronaves/${aeronave.codigo}/relatorio`)} className="ml-4 bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/50 px-4 py-1.5 rounded-sm text-[10px] font-bold uppercase hover:bg-[#10b981] hover:text-background transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-              Gerar Relatório Final
-            </button>
-          )}
+          
+          {/* BOTÃO DESBLOQUEADO: Agora aparece sempre! */}
+          <button onClick={() => navigate(`/aeronaves/${aeronave.codigo}/relatorio`)} className="ml-4 bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/50 px-4 py-1.5 rounded-sm text-[10px] font-bold uppercase hover:bg-[#10b981] hover:text-background transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            Gerar Relatório Final
+          </button>
+          
         </div>
       </header>
 
