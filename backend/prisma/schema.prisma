@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ================= ENUMS =================
+enum TipoAeronave {
+  COMERCIAL
+  MILITAR
+}
+
+enum TipoPeca {
+  NACIONAL
+  IMPORTADA
+}
+
+enum StatusPeca {
+  PRONTA
+  EM_TRANSPORTE
+  EM_PRODUCAO
+  MANUTENCAO
+}
+
+enum StatusEtapa {
+  PENDENTE
+  ANDAMENTO
+  CONCLUIDA
+  BLOQUEADA
+}
+
+enum TipoTeste {
+  ELETRICO
+  HIDRAULICO
+  AERODINAMICO
+}
+
+enum ResultadoTeste {
+  APROVADO
+  REPROVADO
+}
+
+enum NivelPermissao {
+  ADMINISTRADOR
+  ENGENHEIRO
+  OPERADOR
+}
+
+// ================= MODELOS =================
+
+model Funcionario {
+  id             String         @id @default(uuid())
+  nome           String
+  telefone       String
+  endereco       String
+  usuario        String         @unique
+  senha          String         // No futuro pode usar hash (ex: bcrypt)
+  nivelPermissao NivelPermissao
+  etapas         Etapa[]        @relation("FuncionarioEtapa")
+}
+
+model Aeronave {
+  codigo     String       @id
+  modelo     String
+  tipo       TipoAeronave
+  capacidade Int
+  alcance    Int
+  
+  // Relacionamentos: Uma aeronave tem várias peças, etapas e testes
+  pecas      Peca[]
+  etapas     Etapa[]
+  testes     Teste[]
+}
+
+model Peca {
+  id         String     @id @default(uuid())
+  nome       String
+  tipo       TipoPeca
+  fornecedor String
+  status     StatusPeca
+  
+  aeronaveId String
+  aeronave   Aeronave   @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+}
+
+model Etapa {
+  id              String        @id @default(uuid())
+  nome            String
+  status          StatusEtapa
+  prazo           DateTime
+  
+  aeronaveId      String
+  aeronave        Aeronave      @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+  
+  // Relacionamento com a etapa anterior (opcional)
+  etapaAnteriorId String?       @unique
+  etapaAnterior   Etapa?        @relation("OrdemEtapas", fields: [etapaAnteriorId], references: [id])
+  etapaProxima    Etapa?        @relation("OrdemEtapas")
+
+  // Relação M:N com funcionários (funcionários alocados)
+  funcionarios    Funcionario[] @relation("FuncionarioEtapa")
+}
+
+model Teste {
+  id           String          @id @default(uuid())
+  nome         String
+  tipo         TipoTeste
+  dataValidade DateTime
+  resultado    ResultadoTeste?
+  
+  aeronaveId   String
+  aeronave     Aeronave        @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+}

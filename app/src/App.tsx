@@ -8,6 +8,7 @@ import { Inventario } from './pages/Inventario';
 import { Equipe } from './pages/Equipe';
 import { Login } from './pages/Login';
 import { Relatorio } from './pages/Relatorio';
+import RelatorioQualidade from './pages/RelatorioQualidade';
 
 // Componente que protege as páginas de quem não está logado
 function ProtectedRoutes() {
@@ -36,6 +37,7 @@ function App() {
               <Route path="aeronaves" element={<Aeronaves />} />
               <Route path="aeronaves/:id" element={<AeronaveDetalhe />} />
               <Route path="aeronaves/:id/relatorio" element={<Relatorio />} /> 
+              <Route path="aeronaves/:id/relatorio-qualidade" element={<RelatorioQualidade />} />
               <Route path="inventario" element={<Inventario />} />
               <Route path="equipe" element={<Equipe />} />
             </Route>
