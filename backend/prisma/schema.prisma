@@ -82,8 +82,8 @@ model Peca {
   fornecedor String
   status     StatusPeca
   
-  aeronaveId String
-  aeronave   Aeronave   @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+  aeronaveId String?    
+  aeronave   Aeronave?  @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
 }
 
 model Etapa {
