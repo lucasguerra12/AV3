@@ -126,11 +126,7 @@ npm run dev
 
 ### 🔑 Acesso ao Sistema
 
-Como o sistema permite a criação dinâmica de usuários na tela de **Gestão de Equipe**, o primeiro login do Administrador está desbloqueado para facilitar a avaliação do professor.
-
-* **Identificação (Usuário):** *Qualquer nome* (ex: `admin`)
-* **Senha:** *Qualquer senha*
-* Clique em **Acessar Sistema**.
+Como o sistema foi pensado no setor privado,os primeiros acessos são controlados ,mas podendo ser acessados com : usuario: lucas g ; e senha : senha123
 
 ```
 
